@@ -3,37 +3,33 @@ from flask import Flask,jsonify,request,json
 
 app=Flask(__name__)
 
-courses=[{'course_id':10,
-         'course_name':'python',
-         'price':'3200 INR'
-          },
-{'course_id':20,
-         'course_name':'java',
-         'price':'3000 INR'
-          },
-{'course_id':30,
-         'course_name':'ruby',
-         'price':'3900 INR'
-          }
-         ]
-
 
 @app.route("/")
 def index():
-    return "Welcome"
+    with open('data.json', 'r+') as f:
+        return json.loads(f.read())
+
 
 @app.route('/course/<int:id>/',methods=['GET'])
 def get_course(id):
-    elem=[elem for elem in courses if elem['course_id']==id]
-    return jsonify({'course':elem})
+    with open('data.json','r+') as f:
+        courses=json.loads(f.read())
+        for k,v in courses.items():
+            if courses[k]['course_id']==id:
+                elem=courses[k]
+    return elem
 
-@app.route('/course/',methods=['POST'])
+@app.route('/',methods=['POST'])
 def create():
     payload=request.data
     print(payload)
     print(json.loads(payload))
-    courses.append(json.loads(payload))
-    return jsonify({})
+    with open('data.json', 'a+') as f:
+        courses = json.loads(f.read())
+        courses.update(json.loads(payload))
+        f.write(json.dumps(courses))
+
+    return courses
 
 @app.route('/course/<int:id>/',methods=['PUT'])
 def update(id):

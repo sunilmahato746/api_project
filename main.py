@@ -38,15 +38,26 @@ def create():
 
 
 
-# @app.route('/course/<int:id>/',methods=['PUT'])
-# def update(id):
-#     payload=request.data
-#     print(payload)
-#     for elem in courses:
-#         if elem['course_id']==id:
-#             elem.update(json.loads(payload))
-#     return "record updated"
-#
+@app.route('/<int:id>/',methods=['PUT'])
+def update(id):
+    payload=request.data
+    print(payload)
+    with open('data.json','r+') as f:
+        courses=json.loads(f.read())
+
+        courses[str(id)].update(json.loads(payload))
+        f.truncate(0)
+        f.seek(0)
+        f.write(json.dumps(courses))
+    return 'updated'
+
+
+
+
+    return "record updated"
+
+
+
 @app.route('/<int:id>/',methods=['DELETE'])
 def delete_course(id):
 

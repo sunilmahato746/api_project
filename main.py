@@ -11,7 +11,7 @@ def index():
         return json.loads(f.read())
 
 
-@app.route('/course/<int:id>/',methods=['GET'])
+@app.route('/<int:id>/',methods=['GET'])
 def get_course(id):
 
     with open('data.json','r+') as f:
@@ -22,15 +22,15 @@ def get_course(id):
                 return elem
 
 
-@app.route('/',methods=['POST'])
+@app.route('/',  methods=['POST'])
 def create():
     payload=request.data
     print(payload)
     print(json.loads(payload))
     with open('data.json', 'r+') as f:
-
         courses=json.loads(f.read())
         courses.update(json.loads(payload))
+        f.truncate(0)
         f.seek(0)
         f.write(json.dumps(courses))
         return "courses"
@@ -47,10 +47,18 @@ def create():
 #             elem.update(json.loads(payload))
 #     return "record updated"
 #
-@app.route('/course/<int:id>/',methods=['DELETE'])
-def delete(id):
-    pass
+@app.route('/<int:id>/',methods=['DELETE'])
+def delete_course(id):
 
+    with open("data.json", "r+") as f:
+        courses=json.loads(f.read())
+        for k,v in courses.items():
+            if courses[k]['course_id']==id:
+                del courses[k]
+                f.truncate(0)
+                f.seek(0)
+                f.write(json.dumps(courses))
+                return "deleted"
 
 
 
